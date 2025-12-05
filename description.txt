@@ -1,0 +1,6 @@
+The Computer Science department at FAST University uses a centralized digital platform to securely store final‑exam papers before they are released. Each student is assigned a unique access token that unlocks their exam only at the scheduled time. Last week, during a late‑night maintenance update (because FAST servers never behave during the day), the system malfunctioned. A teaching assistant tried to debug the issue and accidentally leaked part of the platform’s master authorization value inside a server log. Before anyone noticed, the automated backup service synced the log straight to the public FAST GitLab mirror where it stayed publicly visible for several minutes. At the same time, FASTs IT department detected a suspicious encrypted exam‑access packet traveling across the internal network. The signal looked like someone was attempting to open their exam early. Now the department wants answers... Your mission:
+
+Use the leaked diagnostic value to reconstruct FAST’s master authorization value.
+Recover the system’s internal key used to validate and decode exam packets.
+Decrypt the intercepted exam‑access attempt.
+Extract the unauthorized exam token the flag.
