@@ -84,29 +84,87 @@ Then convert the decrypted integer to bytes to retrieve the flag.
 3. **Multi-prime RSA mathematics** - Understanding φ(N) for multiple primes
 4. **Modular inverse calculation** - Using Extended Euclidean Algorithm
 
+## Current Status
+
+### Factorization Progress
+
+Using Pollard's rho algorithm, we successfully found small factors:
+```
+N = 13 × 653 × 2791 × Q
+```
+
+where Q is a large 2023-bit composite number:
+```
+Q = 945016280241333772211643293786766373020855449406550627551448513433749717081522531677310942508877089027111351136178468820479503742640194014164841037935958992950906341707739770636427843230704500518879464650925454433623365106466038452756043429403794994771614751147116081851197304957101534081372619467428767834877554688237844242709852145351237893213867187149209543461406007638797621333233365576485013513752377227046231643724753074611464849962196386401180670977889764149874012787461811544053612073355766282357968925051569490935593201664903304931408594091753210971688274676811166396728201650818974826574270599989139
+```
+
+### Challenges Encountered
+
+1. **Q is composite but difficult to factor**
+   - Sympy's `isprime()` confirms Q is NOT prime
+   - Standard factorization methods (Pollard's rho, Fermat, trial division) have not succeeded
+   - ECM and other advanced methods are still running
+
+2. **The Leaked Value Mystery**
+   - The leaked value (506 bits) doesn't appear to be a direct factor of N
+   - It's not (p-q) or (p+q) for any obvious pair of factors
+   - GCD(N, leaked) = 1, so it shares no common factors
+   - Multiples of leaked only reveal the factor 13 we already know
+
+3. **Decryption Attempts**
+   - Decrypting with partial factorization produces garbled output
+   - This confirms more factors are needed for correct decryption
+   - Various encoding attempts (XOR, reverse, base64) haven't revealed the flag
+
 ## The Role of the Leaked Value
 
-[TO BE DETERMINED - Still analyzing the leaked value's purpose in the solution]
+**[ANALYSIS IN PROGRESS]**
 
-The leaked value (506 bits) may be:
-- Part of one of the prime factors (high or low bits)
-- Related to (p-q) or (p+q) for two of the primes
-- A hint for a specific factorization attack
-- Phi of one of the smaller primes
+Possible interpretations:
+1. **Partial key exposure** - May represent high/low bits of a prime factor
+2. **Hint for Coppersmith's attack** - Could enable polynomial solving for remaining factors  
+3. **Related to φ(N)** - Might be φ of a specific factor
+4. **Smoother relation** - Could indicate a smooth number attack vector
+
+The relationship between the leaked value and the factorization remains the key unsolved aspect of this challenge.
+
+## Next Steps for Complete Solution
+
+1. Continue aggressive factorization of Q using:
+   - GNFS (General Number Field Sieve) - most effective for large semiprimes
+   - Online factorization databases (FactorDB, if available)
+   - Specialized hardware/cloud computing resources
+
+2. Investigate Coppersmith-based partial key recovery using the leaked value
+
+3. Consider if this is a known CTF challenge with published solution
 
 ## Lessons Learned
 
-1. **Never use small primes in RSA** - Even a single small factor (like 13) makes the entire system vulnerable
-2. **Multi-prime RSA is weaker** - More factors mean more attack surface
-3. **Factorization is the key** - Once N is factored, RSA is completely broken
-4. **Always test for small factors first** - Pollard's rho can find them quickly
+1. **Small factors are fatal** - Even one small prime (13) significantly weakens RSA
+2. **Multi-prime RSA requires all factors** - Missing even one factor prevents decryption
+3. **Modern factorization is computationally intensive** - 2000+ bit composites require specialized tools
+4. **CTF challenges often have clever twists** - The leaked value likely has a non-obvious use
+
+## Partial Solution Code
+
+See `solve.py` for the working factorization and decryption framework. The script successfully:
+- Finds small factors using Pollard's rho
+- Implements multi-prime RSA φ(N) calculation
+- Calculates private key d
+- Performs RSA decryption
+
+**Missing**: Complete factorization of the 2023-bit quotient Q.
 
 ## Flag
 
-[TO BE EXTRACTED AFTER SUCCESSFUL DECRYPTION]
+**[PENDING COMPLETE FACTORIZATION]**
+
+Current decryption output is garbled, confirming incomplete factorization.
 
 ## References
 
-- Pollard's rho algorithm
-- Multi-prime RSA
-- RSA factorization attacks
+- [Pollard's rho algorithm](https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm)
+- [Multi-prime RSA](https://en.wikipedia.org/wiki/RSA_(cryptosystem)#Multi-prime_RSA)
+- [Integer factorization algorithms](https://en.wikipedia.org/wiki/Integer_factorization)
+- [Coppersmith's attack](https://en.wikipedia.org/wiki/Coppersmith%27s_attack)
